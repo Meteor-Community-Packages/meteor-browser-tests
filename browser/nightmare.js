@@ -10,6 +10,8 @@
 
 // HINT: If not working, run with `DEBUG=nightmare:*,electron:*` to see nightmare errors
 
+const show = !!process.env.TEST_BROWSER_VISIBLE;
+
 let nightmare;
 
 // Make sure the nightmare process does not stick around
@@ -31,7 +33,7 @@ export default function startNightmare({
     throw new Error('When running tests with TEST_BROWSER_DRIVER=nightmare, you must first "npm i --save-dev nightmare"');
   }
 
-  nightmare = Nightmare({ show: false });
+  nightmare = Nightmare({ show });
 
   let testFailures;
   nightmare

@@ -79,3 +79,5 @@ NOTE: Currently you must pin to exactly version 3.0.0-beta-2 of selenium-webdriv
 $ npm i --save-dev nightmare
 $ TEST_BROWSER_DRIVER=nightmare meteor test --once --driver-package <your package name>
 ```
+
+You can export `TEST_BROWSER_VISIBLE=1` to show the Electron window while tests run.
