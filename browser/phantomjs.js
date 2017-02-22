@@ -9,7 +9,7 @@
  */
 import childProcess from 'child_process';
 
-const PHANTOMJS_SCRIPT_FILE_NAME = 'browser/phantomjs.js';
+const PHANTOMJS_SCRIPT_FILE_NAME = 'browser/phantomjs_script.js';
 
 export default function startPhantom({
   stdout,
