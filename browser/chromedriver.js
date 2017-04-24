@@ -30,7 +30,11 @@ export default function startChrome({
     webdriver = require('selenium-webdriver');
     logging = require('selenium-webdriver/lib/logging');
   } catch (error) {
-    throw new Error('When running tests with TEST_BROWSER_DRIVER=chrome, you must first "npm i --save-dev selenium-webdriver chromedriver"');
+    console.error(error);
+    throw new Error(
+      'When running app tests with TEST_BROWSER_DRIVER=chrome, you must first ' +
+      '"npm i --save-dev selenium-webdriver@3.0.0-beta-2 chromedriver"'
+    );
   }
 
   // Get the driver instance. By default, chromedriver gives us only errors
