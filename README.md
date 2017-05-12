@@ -1,4 +1,6 @@
-# aldeed:browser-tests
+# meteortesting:browser-tests
+
+_Formerly published as aldeed:browser-tests_
 
 This package exports a `startBrowser` function for server code, which runs your client tests within a headless browser page. Meteor test driver packages can depend on this package. See the example implementation here: https://github.com/DispatchMe/meteor-mocha
 
@@ -9,13 +11,13 @@ NOTE: This package replaces [dispatch:phantomjs-tests](https://github.com/Dispat
 In your test driver package `package.js` file, add
 
 ```js
-api.use('aldeed:browser-tests@0.0.1', 'server');
+api.use('meteortesting:browser-tests@0.0.1', 'server');
 ```
 
 Then in your server code, do something similar to this:
 
 ```js
-import { startBrowser } from 'meteor/aldeed:browser-tests';
+import { startBrowser } from 'meteor/meteortesting:browser-tests';
 
 function start() {
   startBrowser({
