@@ -37,6 +37,13 @@ export default function startNightmare({
 
   let testFailures;
   nightmare
+    .on('page', (type, message, stack) => {
+      if (type === 'error') {
+        stderr(`[ERROR] ${message}\n${stack}`);
+      } else {
+        stdout(`[${type}] ${message}`);
+      }
+    })
     .on('console', (type, message) => {
       // Message may have escaped newlines
       const messageLines = message.split('\\n');
