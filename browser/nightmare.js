@@ -37,6 +37,13 @@ export default function startNightmare({
 
   let testFailures;
   nightmare
+    .on('page', (type, message, stack) => {
+      if (type === 'error') {
+        stderr(`[ERROR] ${message}\n${stack}`);
+      } else {
+        stdout(`[${type}] ${message}`);
+      }
+    })
     .on('console', (type, message) => {
       // Message may have escaped newlines
       const messageLines = message.split('\\n');
@@ -61,14 +68,22 @@ export default function startNightmare({
       return window.testsDone;
     })
     .evaluate(function () {
-      return window.testFailures;
+      return {
+        failures: window.testFailures,
+        coverage: window.__coverage__
+      };
     })
-    .then(failures => {
+    .end()
+    .then(({ failures, coverage }) => {
       testFailures = failures;
+      const libCoverage = require('istanbul-lib-coverage');
+      const map = libCoverage.createCoverageMap(global.__coverage__ || {})
+      if (coverage) {
+        map.merge(coverage)
+      }
+      global.__coverage__ = map.toJSON();
+      done(testFailures);
       return nightmare.end();
     })
-    .then(() => {
-      nightmare = null;
-      done(testFailures);
-    });
+    .catch(error => console.log('ERROR', error))
 }
