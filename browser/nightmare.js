@@ -68,14 +68,22 @@ export default function startNightmare({
       return window.testsDone;
     })
     .evaluate(function () {
-      return window.testFailures;
+      return {
+        failures: window.testFailures,
+        coverage: window.__coverage__
+      };
     })
-    .then(failures => {
+    .end()
+    .then(({ failures, coverage }) => {
       testFailures = failures;
+      const libCoverage = require('istanbul-lib-coverage');
+      const map = libCoverage.createCoverageMap(global.__coverage__ || {})
+      if (coverage) {
+        map.merge(coverage)
+      }
+      global.__coverage__ = map.toJSON();
+      done(testFailures);
       return nightmare.end();
     })
-    .then(() => {
-      nightmare = null;
-      done(testFailures);
-    });
+    .catch(error => console.log('ERROR', error))
 }
