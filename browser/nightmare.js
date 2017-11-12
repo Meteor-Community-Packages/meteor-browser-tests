@@ -37,13 +37,19 @@ export default function startNightmare({
 
   let testFailures;
   nightmare
+    .on('page', (type, message, stack) => {
+      if (type === 'error') {
+        stderr(`[ERROR] ${message}\n${stack}`);
+      } else {
+        stdout(`[${type}] ${message}`);
+      }
+    })
     .on('console', (type, message) => {
-      // Message may have escaped newlines
-      const messageLines = message.split('\\n');
-
       if (type === 'error') {
         stderr(`[ERROR] ${message}`);
       } else {
+        // Message may have escaped newlines
+        const messageLines = message.split('\\n');
         messageLines.forEach(messageLine => {
           stdout(messageLine);
         });
@@ -70,5 +76,8 @@ export default function startNightmare({
     .then(() => {
       nightmare = null;
       done(testFailures);
+    })
+    .catch(error => {
+      stderr(error && error.message);
     });
 }
