@@ -68,12 +68,22 @@ $ TEST_BROWSER_DRIVER=phantomjs meteor test --once --driver-package <your packag
 
 ### Selenium ChromeDriver
 
+Meteor 1.6+:
+
 ```bash
-$ npm i --save-dev selenium-webdriver@3.0.0-beta-2 chromedriver
+$ meteor npm i --save-dev selenium-webdriver chromedriver
 $ TEST_BROWSER_DRIVER=chrome meteor test --once --driver-package <your package name>
 ```
 
-NOTE: Currently you must pin to exactly version 3.0.0-beta-2 of selenium-webdriver because the latest only works on Node 6.x
+Meteor < 1.6:
+
+**NOTE: Currently you must pin to exactly version 3.0.0-beta-2 of selenium-webdriver for earlier versions of Meteor because the latest webdriver package only works on Node 6.x+. The `-E` in the command below is important!**
+
+```bash
+$ meteor npm i -E --save-dev selenium-webdriver@3.0.0-beta-2
+$ meteor npm i --save-dev chromedriver
+$ TEST_BROWSER_DRIVER=chrome meteor test --once --driver-package <your package name>
+```
 
 ### Nightmare/Electron
 

@@ -60,12 +60,11 @@ export default function startChrome({
             message = message.slice(message.indexOf('"') + 1, -1);
           }
 
-          // Message may have escaped newlines
-          const messageLines = message.split('\\n');
-
           if (entry.level.name === 'SEVERE') {
             stderr(`[ERROR] ${message}`);
           } else {
+            // Message may have escaped newlines
+            const messageLines = message.split('\\n');
             messageLines.forEach(messageLine => {
               stdout(messageLine);
             });
