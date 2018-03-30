@@ -6,10 +6,6 @@ Package.describe({
   testOnly: true,
 });
 
-Npm.depends({
-  'promise-retry': '1.1.1',
-});
-
 Package.onUse(function (api) {
   api.use('ecmascript@0.3.0');
 

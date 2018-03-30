@@ -8,7 +8,6 @@
  *   for 30 seconds.
  */
 const util = require('util');
-const promiseRetry = require('promise-retry');
 
 export default function startPuppeteer({
   stdout,
@@ -27,44 +26,36 @@ export default function startPuppeteer({
   }
 
   async function runTests() {
+    // --no-sandbox and --disable-setuid-sandbox allow this to easily run in docker
     const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     console.log(await browser.version());
     const page = await browser.newPage();
 
-    // console message args come in as handles, use this to evaluate them all and inspect
+    // console message args come in as handles, use this to evaluate them all
     async function evaluateHandles (msg) {
-      return (await Promise.all(msg.args().map(arg => page.evaluate(h => h, arg))))
-        .map(arg => (typeof arg !== 'string' ? util.inspect(arg, { depth: 1 }) : arg))
+      return (await Promise.all(msg.args().map(arg => page.evaluate(h => h.toString(), arg))))
         .join(' ');
     }
 
     page.on('console', async (msg) => {
       // this is racy but how else to do it?
-      const testsAreRunning = await page.evaluate(() => window.testsAreRunning);
-      if (msg.type === 'error' && !testsAreRunning) {
+      const testsAreRunning = await page.evaluate('window.testsAreRunning');
+      if (msg.type() === 'error' && !testsAreRunning) {
         stderr(await evaluateHandles(msg));
       } else {
         stdout(await evaluateHandles(msg));
       }
     });
 
-    // retry until connected to meteor test page
-    await promiseRetry((retry, count) => {
-      // console.log(`trying page ${URL}...`, count)
-      return page.goto(process.env.ROOT_URL).catch(retry);
-    }, { maxTimeout: 8000, retries: 20 });
+    await page.goto(process.env.ROOT_URL);
 
-    // wait for window.testsDone
-    await promiseRetry((retry, count) => {
-      // console.log('waiting for mocha...', count)
-      return page.evaluate('window.testsDone')
-        .then(testsDone => console.assert(testsDone, 'mocha not done...'))
-        .catch(retry);
-    }, { maxTimeout: 2000, retries: 100 });
-
+    await page.waitFor(() => window.testsDone);
     const testFailures = await page.evaluate('window.testFailures');
+
+    await page.close();
+    await browser.close();
+
     done(testFailures);
-    browser.close();
   }
 
   runTests();
