@@ -59,6 +59,13 @@ export { runTests };
 
 When using your test driver package, you will need to install the necessary NPM package dependency and indicate which headless browser you want to use.
 
+### Puppeteer
+
+```bash
+$ npm i --save-dev puppeteer@^1.2.0
+$ TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package <your package name>
+```
+
 ### PhantomJS
 
 ```bash
