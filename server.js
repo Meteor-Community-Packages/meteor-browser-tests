@@ -3,7 +3,7 @@ import startChrome from './browser/chromedriver';
 import startNightmare from './browser/nightmare';
 import startPuppeteer from './browser/puppeteer';
 
-const supportedDrivers = ['chrome', 'nightmare', 'phantomjs'];
+const supportedDrivers = ['chrome', 'nightmare', 'phantomjs', 'puppeteer'];
 
 const driver = process.env.TEST_BROWSER_DRIVER;
 
