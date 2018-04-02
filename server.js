@@ -1,6 +1,7 @@
 import startPhantom from './browser/phantomjs';
 import startChrome from './browser/chromedriver';
 import startNightmare from './browser/nightmare';
+import startPuppeteer from './browser/puppeteer';
 
 const supportedDrivers = ['chrome', 'nightmare', 'phantomjs'];
 
@@ -28,6 +29,10 @@ function startBrowser(options) {
 
     case 'nightmare':
       startNightmare(driverOptions);
+      break;
+
+    case 'puppeteer':
+      startPuppeteer(driverOptions);
       break;
 
     default:
