@@ -82,6 +82,8 @@ $ meteor npm i --save-dev selenium-webdriver chromedriver
 $ TEST_BROWSER_DRIVER=chrome meteor test --once --driver-package <your package name>
 ```
 
+Chrome will run headless unless you export `TEST_BROWSER_VISIBLE=1`.
+
 Meteor < 1.6:
 
 **NOTE: Currently you must pin to exactly version 3.0.0-beta-2 of selenium-webdriver for earlier versions of Meteor because the latest webdriver package only works on Node 6.x+. The `-E` in the command below is important!**

@@ -25,10 +25,12 @@ export default function startChrome({
   let chromedriver;
   let webdriver;
   let logging;
+  let chrome;
   try {
     require('chromedriver');
     webdriver = require('selenium-webdriver');
     logging = require('selenium-webdriver/lib/logging');
+    chrome = require('selenium-webdriver/chrome');
   } catch (error) {
     console.error(error);
     throw new Error(
@@ -39,7 +41,9 @@ export default function startChrome({
 
   // Get the driver instance. By default, chromedriver gives us only errors
   // so we need to set browser logging level to "ALL".
-  driver = new webdriver.Builder().forBrowser('chrome').setLoggingPrefs({ browser: 'ALL' }).build();
+  const options = new chrome.Options();
+  if (!process.env.TEST_BROWSER_VISIBLE) options.addArguments('--headless');
+  driver = new webdriver.Builder().forBrowser('chrome').withCapabilities(options.toCapabilities()).setLoggingPrefs({ browser: 'ALL' }).build();
 
   // Can't hide the window but can move it off screen
   driver.manage().window().setPosition(20000, 20000);
