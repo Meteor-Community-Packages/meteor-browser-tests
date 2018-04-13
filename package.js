@@ -2,7 +2,7 @@ Package.describe({
   name: "meteortesting:browser-tests",
   summary: "A helper package for Meteor test driver packages. Runs client tests in a headless browser.",
   git: "https://github.com/meteortesting/meteor-browser-tests.git",
-  version: '0.2.0',
+  version: '1.0.0',
   testOnly: true,
 });
 

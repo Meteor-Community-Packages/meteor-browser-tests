@@ -1,13 +1,13 @@
 babel-compiler@7.0.6
 babel-runtime@1.2.0
 dynamic-import@0.3.0
-ecmascript@0.10.0
+ecmascript@0.10.6
 ecmascript-runtime@0.5.0
 ecmascript-runtime-client@0.6.0
 ecmascript-runtime-server@0.5.0
 http@1.4.0
 meteor@1.8.2
-meteortesting:browser-tests@0.2.0
+meteortesting:browser-tests@1.0.0
 modules@0.11.3
 modules-runtime@0.9.1
 promise@0.10.1

@@ -1,6 +1,6 @@
 # Changelog
 
-## next
+## 1.0.0
 
 Breaking: Chrome driver now runs headless unless you set `TEST_BROWSER_VISIBLE=1`
 
