@@ -52,7 +52,6 @@ export default function startPuppeteer({
     await page.waitFor(() => window.testsDone);
     const testFailures = await page.evaluate('window.testFailures');
 
-    await page.close();
     await browser.close();
 
     done(testFailures);
