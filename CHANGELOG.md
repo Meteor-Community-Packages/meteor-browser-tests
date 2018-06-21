@@ -3,6 +3,7 @@
 ## NEXT
 
 Set timeout for tests on puppeteer to 0 (infinite)
+Removed explicit closing of page to avoid "WebSocket is closed before the connection is established." error
 
 ## 1.0.0
 
