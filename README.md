@@ -84,6 +84,8 @@ $ TEST_BROWSER_DRIVER=chrome meteor test --once --driver-package <your package n
 
 Chrome will run headless unless you export `TEST_BROWSER_VISIBLE=1`.
 
+Additional command-line arguments for Chrome can be specified using the `TEST_CHROME_ARGS` environment variable. Multiple arguments are supported, separated by spaces. If you need to include a space inside an individual argument, use `%20` instead of the space.
+
 Meteor < 1.6:
 
 **NOTE: Currently you must pin to exactly version 3.0.0-beta-2 of selenium-webdriver for earlier versions of Meteor because the latest webdriver package only works on Node 6.x+. The `-E` in the command below is important!**

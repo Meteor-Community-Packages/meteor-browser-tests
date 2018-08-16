@@ -43,6 +43,14 @@ export default function startChrome({
   // so we need to set browser logging level to "ALL".
   const options = new chrome.Options();
   if (!process.env.TEST_BROWSER_VISIBLE) options.addArguments('--headless');
+  // Pass additional chrome options as appropriate
+  if (process.env.TEST_CHROME_ARGS) {
+    // Convert any appearances of "%20" to " " so as to support spaces in arguments if necessary
+    let additionalOptions = process.env.TEST_CHROME_ARGS
+        .split(/\s+/)
+        .map((arg) => arg.replace(/%20/g, " "));
+    options.addArguments.apply(options, additionalOptions);
+  }
   driver = new webdriver.Builder().forBrowser('chrome').withCapabilities(options.toCapabilities()).setLoggingPrefs({ browser: 'ALL' }).build();
 
   // Can't hide the window but can move it off screen
