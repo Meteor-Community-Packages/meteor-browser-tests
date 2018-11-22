@@ -37,14 +37,17 @@ export default function startPuppeteer({
         .join(' ');
     }
 
-    page.on('console', async (msg) => {
-      // this is racy but how else to do it?
-      const testsAreRunning = await page.evaluate('window.testsAreRunning');
-      if (msg.type() === 'error' && !testsAreRunning) {
-        stderr(await evaluateHandles(msg));
-      } else {
-        stdout(await evaluateHandles(msg));
-      }
+    let consolePromise = Promise.resolve();
+    page.on('console', (msg) => {
+      consolePromise = consolePromise.then(async () => {
+        // this is racy but how else to do it?
+        const testsAreRunning = await page.evaluate('window.testsAreRunning');
+        if (msg.type() === 'error' && !testsAreRunning) {
+          stderr(await evaluateHandles(msg));
+        } else {
+          stdout(await evaluateHandles(msg));
+        }
+      });
     });
 
     await page.goto(process.env.ROOT_URL);
@@ -52,6 +55,9 @@ export default function startPuppeteer({
     await page.waitFor(() => window.testsDone, { timeout: 0 });
     const testFailures = await page.evaluate('window.testFailures');
 
+    await consolePromise;
+
+    await page.close();
     await browser.close();
 
     done(testFailures);
