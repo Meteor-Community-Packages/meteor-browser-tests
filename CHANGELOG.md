@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0
+
+Better fix for puppeteer closing the browser before all console-statements were evaluated
+Give out `stdout:` console messages, needed for reporters writing to a file - now available as `option.writebuffer()`
+
 ## 1.1.0
 
 Set timeout for tests on puppeteer to 0 (infinite)
