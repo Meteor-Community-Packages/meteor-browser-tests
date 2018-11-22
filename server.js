@@ -11,10 +11,14 @@ function startBrowser(options) {
   const driverOptions = {
     ...options,
     stdout(message) {
-      // Remove empty "stdout" lines. Not sure where these come from.
-      // See https://github.com/DispatchMe/meteor-mocha-phantomjs/issues/30
-      if (typeof message === 'string' && message.startsWith('stdout:')) return;
-      options.stdout(message);
+      // Don't just throw away the stdout messages. They're data from a writable buffer.
+      if (typeof message === 'string' && message.startsWith('stdout: ')) {
+        if (typeof options.writebuffer === 'function') {
+          options.writebuffer(message.substr(8));
+        }
+      } else {
+        options.stdout(message);
+      }
     },
   };
 
