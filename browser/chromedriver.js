@@ -53,8 +53,11 @@ export default function startChrome({
   }
   driver = new webdriver.Builder().forBrowser('chrome').withCapabilities(options.toCapabilities()).setLoggingPrefs({ browser: 'ALL' }).build();
 
-  // Can't hide the window but can move it off screen
-  driver.manage().window().setPosition(20000, 20000);
+  // Only hide the window if the tests are running non-headless.
+  if (process.env.TEST_BROWSER_VISIBLE) {
+    // Can't hide the window but can move it off screen
+    driver.manage().window().setPosition(20000, 20000);
+  }
 
   // We periodically grab logs from Chrome and pass them back.
   // Every time we call this, we get only the log entries since
