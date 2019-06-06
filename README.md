@@ -66,13 +66,6 @@ $ npm i --save-dev puppeteer@^1.5.0
 $ TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package <your package name>
 ```
 
-### PhantomJS
-
-```bash
-$ npm i --save-dev phantomjs-prebuilt
-$ TEST_BROWSER_DRIVER=phantomjs meteor test --once --driver-package <your package name>
-```
-
 ### Selenium ChromeDriver
 
 Meteor 1.6+:
@@ -104,3 +97,12 @@ $ TEST_BROWSER_DRIVER=nightmare meteor test --once --driver-package <your packag
 ```
 
 You can export `TEST_BROWSER_VISIBLE=1` to show the Electron window while tests run.
+
+### PhantomJS
+
+Support for PhantomJS has been deprecated because it's development is suspended. For more information on why it got suspended, please take a look at [the repository](https://github.com/ariya/phantomjs)
+
+```bash
+$ npm i --save-dev phantomjs-prebuilt
+$ TEST_BROWSER_DRIVER=phantomjs meteor test --once --driver-package <your package name>
+```
