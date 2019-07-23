@@ -32,30 +32,14 @@ export default function startPuppeteer({
     const page = await browser.newPage();
 
     // console message args come in as handles, use this to evaluate them all
-    async function evaluateHandles (msg) {
-      return (await Promise.all(msg.args().map(arg => page.evaluate(h => h.toString(), arg))))
-        .join(' ');
-    }
-
-    let consolePromise = Promise.resolve();
-    page.on('console', (msg) => {
-      consolePromise = consolePromise.then(async () => {
-        // this is racy but how else to do it?
-        const testsAreRunning = await page.evaluate('window.testsAreRunning');
-        if (msg.type() === 'error' && !testsAreRunning) {
-          stderr(await evaluateHandles(msg));
-        } else {
-          stdout(await evaluateHandles(msg));
-        }
-      });
-    });
+    page.on('console', async msg => console[msg._type](
+      ...await Promise.all(msg.args().map(arg => arg.jsonValue()))
+    ));
 
     await page.goto(process.env.ROOT_URL);
 
     await page.waitFor(() => window.testsDone, { timeout: 0 });
     const testFailures = await page.evaluate('window.testFailures');
-
-    await consolePromise;
 
     await page.close();
     await browser.close();
