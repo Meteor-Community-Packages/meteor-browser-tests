@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+Puppeteer: Fixed evaluation of console-messages
+
 ## 1.2.0
 
 Better fix for puppeteer closing the browser before all console-statements were evaluated
