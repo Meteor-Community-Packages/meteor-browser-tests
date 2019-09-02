@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+Nightmare: Make sure message is always a string before split (#24 - @Floriferous)
+
 ## 1.3.0
 
 Puppeteer: Fixed evaluation of console-messages
