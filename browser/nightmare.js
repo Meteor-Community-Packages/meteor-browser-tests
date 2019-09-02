@@ -44,7 +44,7 @@ export default function startNightmare({
         stdout(`[${type}] ${message}`);
       }
     })
-    .on('console', (type, message) => {
+    .on('console', (type, message = '') => {
       if (type === 'error') {
         stderr(`[ERROR] ${message}`);
       } else {
