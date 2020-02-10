@@ -9,6 +9,13 @@
  */
 const util = require('util');
 
+// map of puppeteer console types to their node counterpart
+const consoleMap = {
+  'warning' : 'warn',
+  'startGroup' : 'group',
+  'endGroup' : 'groupEnd',
+};
+
 export default function startPuppeteer({
   stdout,
   stderr,
@@ -31,10 +38,26 @@ export default function startPuppeteer({
     console.log(await browser.version());
     const page = await browser.newPage();
 
+    // emitted when the page crashes
+    page.on('error', (err) => {
+      console.warn('The page has crashed.', err);
+    });
+
     // console message args come in as handles, use this to evaluate them all
-    page.on('console', async msg => console[msg._type](
-      ...await Promise.all(msg.args().map(arg => arg.jsonValue()))
-    ));
+    page.on('console', async msg => {
+      let msgType = msg._type;
+
+      // unknown console types are mapped or become a warning with addl context
+      if(consoleMap[msgType]) {
+        msgType = consoleMap[msgType];
+      }
+      else if(typeof console[msgType] === "undefined") {
+        msgType = 'warn';
+        console.warn(`UNKNOWN CONSOLE TYPE: ${msgType}`);
+      }
+
+      console[msgType](...await Promise.all(msg.args().map(arg => arg.jsonValue())));
+    });
 
     await page.goto(process.env.ROOT_URL);
 
