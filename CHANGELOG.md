@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2
+
+Puppeteer: Fixed calling `console.warn()` crashing by "console[msg._type] is not a function" (#26 - @robraux)
+
 ## 1.3.1
 
 Nightmare: Make sure message is always a string before split (#24 - @Floriferous)
