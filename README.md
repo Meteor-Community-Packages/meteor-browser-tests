@@ -98,6 +98,8 @@ $ TEST_BROWSER_DRIVER=nightmare meteor test --once --driver-package <your packag
 
 You can export `TEST_BROWSER_VISIBLE=1` to show the Electron window while tests run.
 
+Nightmare's default `wait()` timeout is 30 seconds. It may not be enough to run all your tests. You can change it using the environment variable `NIGHTMARE_WAIT_TIMEOUT=60000` to set it to 60 seconds, for example.
+
 ### PhantomJS
 
 Support for PhantomJS has been deprecated because it's development is suspended. For more information on why it got suspended, please take a look at [the repository](https://github.com/ariya/phantomjs)
