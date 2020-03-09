@@ -35,7 +35,8 @@ export default function startNightmare({
 
   nightmare = Nightmare({
     show,
-    waitTimeout: process.env.NIGHTMARE_WAIT_TIMEOUT || 30000,
+    // use nightmare's default timeout if no env var is found
+    waitTimeout: process.env.NIGHTMARE_WAIT_TIMEOUT || null,
   });
 
   let testFailures;
