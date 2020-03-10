@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.3
+
+Nightmare: Add env var to change timeout for wait() (#27 - @bolaum)
+
 ## 1.3.2
 
 Puppeteer: Fixed calling `console.warn()` crashing by "console[msg._type] is not a function" (#26 - @robraux)
