@@ -33,7 +33,11 @@ export default function startNightmare({
     throw new Error('When running tests with TEST_BROWSER_DRIVER=nightmare, you must first "npm i --save-dev nightmare"');
   }
 
-  nightmare = Nightmare({ show });
+  nightmare = Nightmare({
+    show,
+    // use nightmare's default timeout if no env var is found
+    waitTimeout: process.env.NIGHTMARE_WAIT_TIMEOUT || null,
+  });
 
   let testFailures;
   nightmare
