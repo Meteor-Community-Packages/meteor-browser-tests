@@ -48,16 +48,16 @@ export default function startNightmare({
         stdout(`[${type}] ${message}`);
       }
     })
-    .on('console', (type, message = '') => {
-      if (type === 'error') {
-        stderr(`[ERROR] ${message}`);
-      } else {
-        // Message may have escaped newlines
-        const messageLines = message.split('\\n');
-        messageLines.forEach(messageLine => {
-          stdout(messageLine);
-        });
+    .on('console', (type, ...args) => {
+      let msgType = type;
+
+      // unknown console types are mapped or become a warning with addl context
+      if(typeof console[msgType] === "undefined") {
+        msgType = 'warn';
+        console.warn(`UNKNOWN CONSOLE TYPE: ${msgType}`);
       }
+
+      console[msgType](...args);
     })
 
     // Meteor will call the `runTests` function exported by the driver package
