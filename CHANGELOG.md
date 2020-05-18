@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4
+
+Nightmare: Fixed calling `console.log()` with more than one parameter
+
 ## 1.3.3
 
 Nightmare: Add env var to change timeout for wait() (#27 - @bolaum)
