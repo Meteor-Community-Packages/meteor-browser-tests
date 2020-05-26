@@ -35,8 +35,10 @@ export default function startNightmare({
 
   nightmare = Nightmare({
     show,
-    // use nightmare's default timeout if no env var is found
-    waitTimeout: process.env.NIGHTMARE_WAIT_TIMEOUT || null,
+    // Controls maximum time client tests can take for Meteor to still
+    // automatically exit after they complete.
+    // Defaults to 30 minutes
+    waitTimeout: process.env.NIGHTMARE_WAIT_TIMEOUT || 1000 * 60 * 30,
   });
 
   let testFailures;
