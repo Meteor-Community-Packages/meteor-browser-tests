@@ -11,6 +11,7 @@
 // HINT: If not working, run with `DEBUG=nightmare:*,electron:*` to see nightmare errors
 
 const show = !!process.env.TEST_BROWSER_VISIBLE;
+const TWENTY_DAYS = 1000 * 60 * 60 * 24 * 20;
 
 let nightmare;
 
@@ -35,8 +36,10 @@ export default function startNightmare({
 
   nightmare = Nightmare({
     show,
-    // use nightmare's default timeout if no env var is found
-    waitTimeout: process.env.NIGHTMARE_WAIT_TIMEOUT || null,
+    // Controls maximum time client tests can take for Meteor to still
+    // automatically exit after they complete.
+    // Defaults to 20 days
+    waitTimeout: TWENTY_DAYS,
   });
 
   let testFailures;
