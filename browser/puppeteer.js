@@ -61,7 +61,7 @@ export default function startPuppeteer({
 
     await page.goto(process.env.ROOT_URL);
 
-    await page.waitFor(() => window.testsDone, { timeout: 0 });
+    await page.waitForFunction(() => window.testsDone, { timeout: 0 });
     const testFailures = await page.evaluate('window.testFailures');
 
     await page.close();
