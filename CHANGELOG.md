@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.5
+
+Nightmare: Increased default `waitTimeout` to 20 days
+Browser puppeteer replace deprecated page.waitFor with page.waitForFunction
+Updated package ecmascript dependency
+
 ## 1.3.4
 
 Nightmare: Fixed calling `console.log()` with more than one parameter
