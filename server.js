@@ -1,9 +1,10 @@
 import startPhantom from './browser/phantomjs';
 import startChrome from './browser/chromedriver';
 import startNightmare from './browser/nightmare';
+import startPlaywright from './browser/playwright';
 import startPuppeteer from './browser/puppeteer';
 
-const supportedDrivers = ['chrome', 'nightmare', 'phantomjs', 'puppeteer'];
+const supportedDrivers = ['chrome', 'nightmare', 'phantomjs', 'playwright', 'puppeteer'];
 
 const driver = process.env.TEST_BROWSER_DRIVER;
 
@@ -37,6 +38,10 @@ function startBrowser(options) {
 
     case 'puppeteer':
       startPuppeteer(driverOptions);
+      break;
+
+    case 'playwright':
+      startPlaywright(driverOptions)
       break;
 
     default:
