@@ -45,15 +45,15 @@ export default function startPuppeteer({
 
     // console message args come in as handles, use this to evaluate them all
     page.on('console', async msg => {
-      let msgType = msg._type;
+      let msgType = msg.type();
 
       // unknown console types are mapped or become a warning with addl context
       if(consoleMap[msgType]) {
         msgType = consoleMap[msgType];
       }
       else if(typeof console[msgType] === "undefined") {
-        msgType = 'warn';
         console.warn(`UNKNOWN CONSOLE TYPE: ${msgType}`);
+        msgType = 'warn';
       }
 
       console[msgType](...await Promise.all(msg.args().map(arg => arg.jsonValue())));
