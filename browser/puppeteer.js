@@ -40,7 +40,7 @@ export default function startPuppeteer({
 
     // console message args come in as handles, use this to evaluate them all
     page.on('console', msg => {
-      let msgType = msg._type;
+      let msgType = msg.type();
 
       consolePromise = consolePromise.then(async () => {
         // this is racy but how else to do it?
