@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.0
+Fix using puppeteer with output files
+fix: Use documented API for console message type
+add TEST_BROWSER_DRIVER=playwright
+
 ## 1.3.5
 
 Nightmare: Increased default `waitTimeout` to 20 days
