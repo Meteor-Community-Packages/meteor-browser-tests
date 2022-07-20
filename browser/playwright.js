@@ -27,7 +27,7 @@
      console.error(error);
      throw new Error(
        'When running app tests with TEST_BROWSER_DRIVER=playwright, you must first ' +
-       '"npm i --save-dev playwright'
+       '"meteor npm i --save-dev playwright"'
      );
    }
  
