@@ -7,34 +7,32 @@
  * - As a safeguard, exit with code 2 if there hasn't been console output
  *   for 30 seconds.
  */
-const util = require('util');
 
 // map of puppeteer console types to their node counterpart
 const consoleMap = {
-  'warning' : 'warn',
-  'startGroup' : 'group',
-  'endGroup' : 'groupEnd',
+  warning: 'warn',
+  startGroup: 'group',
+  endGroup: 'groupEnd',
 };
 
-export default function startPuppeteer({
-  stdout,
-  stderr,
-  done,
-}) {
+export default function startPuppeteer({ done }) {
   let puppeteer;
   try {
+    // eslint-disable-next-line global-require, import/no-extraneous-dependencies
     puppeteer = require('puppeteer');
   } catch (error) {
     console.error(error);
     throw new Error(
       'When running app tests with TEST_BROWSER_DRIVER=puppeteer, you must first ' +
-      '"npm i --save-dev puppeteer@^1.5.0"'
+        '"npm i --save-dev puppeteer@^1.5.0"'
     );
   }
 
   async function runTests() {
     // --no-sandbox and --disable-setuid-sandbox allow this to easily run in docker
-    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
     console.log(await browser.version());
     const page = await browser.newPage();
 
@@ -44,19 +42,20 @@ export default function startPuppeteer({
     });
 
     // console message args come in as handles, use this to evaluate them all
-    page.on('console', async msg => {
-      let msgType = msg._type;
+    page.on('console', async (msg) => {
+      let msgType = msg.type();
 
       // unknown console types are mapped or become a warning with addl context
-      if(consoleMap[msgType]) {
+      if (consoleMap[msgType]) {
         msgType = consoleMap[msgType];
-      }
-      else if(typeof console[msgType] === "undefined") {
-        msgType = 'warn';
+      } else if (typeof console[msgType] === 'undefined') {
         console.warn(`UNKNOWN CONSOLE TYPE: ${msgType}`);
+        msgType = 'warn';
       }
 
-      console[msgType](...await Promise.all(msg.args().map(arg => arg.jsonValue())));
+      console[msgType](
+        ...(await Promise.all(msg.args().map((arg) => arg.jsonValue())))
+      );
     });
 
     await page.goto(process.env.ROOT_URL);

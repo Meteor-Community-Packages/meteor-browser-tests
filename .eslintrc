@@ -9,6 +9,7 @@
     "describe": false
   },
   "rules": {
+    "comma-dangle": 0,
     "consistent-return": 1,
     "max-len": 0,
     "no-use-before-define": [2, "nofunc"],
