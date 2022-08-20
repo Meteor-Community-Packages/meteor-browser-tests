@@ -8,14 +8,11 @@
  *   for 30 seconds.
  */
 
-// map of puppeteer console types to their node counterpart
-const consoleMap = {
-  warning: 'warn',
-  startGroup: 'group',
-  endGroup: 'groupEnd',
-};
-
-export default function startPuppeteer({ done }) {
+export default function startPuppeteer({
+  stdout,
+  stderr,
+  done,
+}) {
   let puppeteer;
   try {
     // eslint-disable-next-line global-require, import/no-extraneous-dependencies
@@ -41,21 +38,25 @@ export default function startPuppeteer({ done }) {
       console.warn('The page has crashed.', err);
     });
 
+    let consolePromise = Promise.resolve();
+
     // console message args come in as handles, use this to evaluate them all
-    page.on('console', async (msg) => {
+    page.on('console', msg => {
       let msgType = msg.type();
 
-      // unknown console types are mapped or become a warning with addl context
-      if (consoleMap[msgType]) {
-        msgType = consoleMap[msgType];
-      } else if (typeof console[msgType] === 'undefined') {
-        console.warn(`UNKNOWN CONSOLE TYPE: ${msgType}`);
-        msgType = 'warn';
-      }
+      consolePromise = consolePromise.then(async () => {
+        // this is racy but how else to do it?
+        const testsAreRunning = await page.evaluate('window.testsAreRunning');
+        const messages = await Promise.all(
+          msg.args().map((arg) => arg.jsonValue()),
+        );
 
-      console[msgType](
-        ...(await Promise.all(msg.args().map((arg) => arg.jsonValue())))
-      );
+        if (msgType === 'error' && !testsAreRunning) {
+          stderr(util.format(...messages));
+        } else {
+          stdout(util.format(...messages));
+        }
+      });
     });
 
     await page.goto(process.env.ROOT_URL);
@@ -63,6 +64,7 @@ export default function startPuppeteer({ done }) {
     await page.waitForFunction(() => window.testsDone, { timeout: 0 });
     const testFailures = await page.evaluate('window.testFailures');
 
+    await consolePromise;
     await page.close();
     await browser.close();
 
