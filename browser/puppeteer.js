@@ -7,6 +7,7 @@
  * - As a safeguard, exit with code 2 if there hasn't been console output
  *   for 30 seconds.
  */
+const util = require('util');
 
 export default function startPuppeteer({
   stdout,
