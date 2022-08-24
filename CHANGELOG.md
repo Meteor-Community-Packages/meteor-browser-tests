@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.1
+Fix: util is not defined in puppeteer.js
+
 ## 1.4.0
 Fix: using puppeteer with output files
 Fix: Use documented API for console message type
