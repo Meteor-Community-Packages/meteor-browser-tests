@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.4.2
+
+Fix: playwright test driver was failing
+
+## 1.4.1
+
+Fix: util is not defined in puppeteer.js
+
+## 1.4.0
+
+Fix: using puppeteer with output files
+Fix: Use documented API for console message type
+Add: TEST_BROWSER_DRIVER=playwright
+
 ## 1.3.5
 
 Nightmare: Increased default `waitTimeout` to 20 days
