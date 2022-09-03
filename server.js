@@ -1,6 +1,6 @@
-import startPhantom from './browser/phantomjs';
 import startChrome from './browser/chromedriver';
 import startNightmare from './browser/nightmare';
+import startPhantom from './browser/phantomjs';
 import startPlaywright from './browser/playwright';
 import startPuppeteer from './browser/puppeteer';
 
@@ -41,13 +41,13 @@ function startBrowser(options) {
       break;
 
     case 'playwright':
-      startPlaywright(driverOptions)
+      startPlaywright(driverOptions);
       break;
 
     default:
       throw new Error(
-        `Unknown driver "${driver}". browser-tests package requires that you set the TEST_BROWSER_DRIVER` +
-        ` environment variable to one of the following: ${supportedDrivers.join(', ')}`
+        `Unknown driver "${driver}". browser-tests package requires that you set the TEST_BROWSER_DRIVER`
+        + ` environment variable to one of the following: ${supportedDrivers.join(', ')}`
       );
   }
 }
