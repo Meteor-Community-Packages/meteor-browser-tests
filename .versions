@@ -8,7 +8,7 @@ ecmascript-runtime-server@0.11.0
 fetch@0.1.1
 inter-process-messaging@0.1.1
 meteor@1.10.0
-meteortesting:browser-tests@1.4.1
+meteortesting:browser-tests@1.4.2
 modern-browsers@0.1.8
 modules@0.18.0
 modules-runtime@0.13.0
