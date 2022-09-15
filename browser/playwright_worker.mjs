@@ -26,9 +26,9 @@ async function startPlaywright(done) {
         '"meteor npm i --save-dev playwright"'
     );
   }
-
+  const browserName = process.env.PLAYWRIGHT_BROWSER || 'chromium';
   // Run tests
-  const browser = await playwright.chromium.launch();
+  const browser = await playwright[browserName].launch();
   console.log(await browser.version());
   const page = await browser.newPage();
 
