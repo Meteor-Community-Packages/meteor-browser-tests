@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.0
+
+Add: Set PLAYWRIGHT_BROWSER to use different Playwright browser. Defaults to 'chromium'.
+
 ## 1.4.2
 
 Fix: playwright test driver was failing
