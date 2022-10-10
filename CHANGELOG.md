@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.1
+Fix: Playwright client not terminating after client tests
+
 ## 1.5.0
 
 Add: Set PLAYWRIGHT_BROWSER to use different Playwright browser. Defaults to 'chromium'.
