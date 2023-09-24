@@ -1,3 +1,5 @@
+const util = require('util');
+
 /**
  * All browser drivers must do the following things:
  * - Open a page to ROOT_URL
@@ -16,6 +18,12 @@ process.on('exit', () => {
     driver.quit();
   }
 });
+
+function countPlaceholders(inputString) {
+  const placeholderPattern = /%[sdifjoO]/g; // Regular expression to match %s, %d, and similar placeholders
+  const matches = inputString.match(placeholderPattern);
+  return matches ? matches.length : 0;
+}
 
 export default function startChrome({
   stdout,
@@ -51,10 +59,10 @@ export default function startChrome({
         .map((arg) => arg.replace(/%20/g, " "));
     options.addArguments.apply(options, additionalOptions);
   }
-  driver = new webdriver.Builder().forBrowser('chrome').withCapabilities(options.toCapabilities()).setLoggingPrefs({ browser: 'ALL' }).build();
+  driver = new webdriver.Builder().forBrowser('chrome').withCapabilities(chrome.Options.chrome()).setChromeOptions(options).setLoggingPrefs({ browser: 'ALL' }).build();
 
   // Can't hide the window but can move it off screen
-  driver.manage().window().setPosition(20000, 20000);
+  driver.manage().window().setRect(20000, 20000);
 
   // We periodically grab logs from Chrome and pass them back.
   // Every time we call this, we get only the log entries since
@@ -64,19 +72,18 @@ export default function startChrome({
       .then(entries => {
         (entries || []).forEach(entry => {
           let message = entry.message || '';
-
-          // Message may look something like this:
-          // http://localhost:3000/packages/dispatch_mocha.js?hash=abc 239:20 "  5 passing (182ms)"
-          // So we will try to strip off the part that isn't the pure message.
-          if (message.startsWith('http://') && message.endsWith('"')) {
-            message = message.slice(message.indexOf('"') + 1, -1);
-          }
+          let messageParts = message.split("\"").filter(str => str.trim().length)
+          let [_url, format, ...defaultFormatValues] = messageParts
+          let formatPlaceholdersCount = countPlaceholders(format)
+          let formatLeftoversCount = Math.max(formatPlaceholdersCount - defaultFormatValues.length || 1, 1)
+          let formatValues = [...defaultFormatValues, ...new Array(formatLeftoversCount).fill('')]
+          let formattedMessage = util.format(format, ...formatValues);
 
           if (entry.level.name === 'SEVERE') {
-            stderr(`[ERROR] ${message}`);
+            stderr(`[ERROR] ${formattedMessage}`);
           } else {
             // Message may have escaped newlines
-            const messageLines = message.split('\\n');
+            const messageLines = formattedMessage.split('\\n');
             messageLines.forEach(messageLine => {
               stdout(messageLine);
             });
