@@ -30,6 +30,7 @@ export default function startPuppeteer({
     // --no-sandbox and --disable-setuid-sandbox allow this to easily run in docker
     const browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: 'new',
     });
     console.log(await browser.version());
     const page = await browser.newPage();

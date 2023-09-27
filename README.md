@@ -62,7 +62,7 @@ When using your test driver package, you will need to install the necessary NPM 
 ### Puppeteer
 
 ```bash
-$ npm i --save-dev puppeteer@^1.5.0
+$ npm i --save-dev puppeteer@^19.11.1
 $ TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package <your package name>
 ```
 
