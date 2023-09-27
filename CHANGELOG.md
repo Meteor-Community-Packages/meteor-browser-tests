@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.2
+Fix: Support for Selenium 4.x
+
 ## 1.5.1
 Fix: Playwright client not terminating after client tests
 
