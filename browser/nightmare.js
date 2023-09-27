@@ -41,8 +41,8 @@ export default function startNightmare({
     // Controls maximum time client tests can take for Meteor to still
     // automatically exit after they complete.
     // Defaults to 20 days
-        waitTimeout: process.env.NIGHTMARE_WAIT_TIMEOUT || TWENTY_DAYS,
-      });
+    waitTimeout: process.env.NIGHTMARE_WAIT_TIMEOUT || TWENTY_DAYS,
+  });
 
   let testFailures;
   nightmare
