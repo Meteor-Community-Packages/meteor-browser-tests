@@ -15,6 +15,8 @@ const TWENTY_DAYS = 1000 * 60 * 60 * 24 * 20;
 
 let nightmare;
 
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
+
 // Make sure the nightmare process does not stick around
 process.on('exit', () => {
   if (nightmare) {
@@ -65,7 +67,10 @@ export default function startNightmare({
 
     // Meteor will call the `runTests` function exported by the driver package
     // on the client as soon as this page loads.
-    .goto(process.env.ROOT_URL)
+    .goto(process.env.ROOT_URL, {
+      'http-equiv': 'Content-Security-Policy',
+      content: 'script-src \'unsafe-eval\'',
+    })
 
     // After the page loads, the tests are running. Eventually they
     // finish and the driver package is supposed to set window.testsDone
