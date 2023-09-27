@@ -1,3 +1,5 @@
+const util = require('util');
+
 /**
  * All browser drivers must do the following things:
  * - Open a page to ROOT_URL
@@ -51,10 +53,10 @@ export default function startChrome({
         .map((arg) => arg.replace(/%20/g, " "));
     options.addArguments.apply(options, additionalOptions);
   }
-  driver = new webdriver.Builder().forBrowser('chrome').withCapabilities(options.toCapabilities()).setLoggingPrefs({ browser: 'ALL' }).build();
+  driver = new webdriver.Builder().forBrowser('chrome').withCapabilities(chrome.Options.chrome()).setChromeOptions(options).setLoggingPrefs({ browser: 'ALL' }).build();
 
   // Can't hide the window but can move it off screen
-  driver.manage().window().setPosition(20000, 20000);
+  driver.manage().window().setRect(20000, 20000);
 
   // We periodically grab logs from Chrome and pass them back.
   // Every time we call this, we get only the log entries since
@@ -64,19 +66,31 @@ export default function startChrome({
       .then(entries => {
         (entries || []).forEach(entry => {
           let message = entry.message || '';
-
-          // Message may look something like this:
-          // http://localhost:3000/packages/dispatch_mocha.js?hash=abc 239:20 "  5 passing (182ms)"
-          // So we will try to strip off the part that isn't the pure message.
-          if (message.startsWith('http://') && message.endsWith('"')) {
-            message = message.slice(message.indexOf('"') + 1, -1);
-          }
-
           if (entry.level.name === 'SEVERE') {
             stderr(`[ERROR] ${message}`);
           } else {
-            // Message may have escaped newlines
-            const messageLines = message.split('\\n');
+            function extractArgs(str) {
+              let rex = /"([^"]*)"|(\b\d+\b)/g;
+              let match;
+              let args = [];
+              while ((match = rex.exec(str)) !== null) {
+                let stringArg = match[1];
+                let numberArg = match[2];
+                if (stringArg !== undefined) {
+                  // string argument found (can be empty)
+                  args.push(stringArg);
+                } else if (numberArg !== undefined) {
+                  // number argument found
+                  args.push(Number(numberArg));
+                }
+              }
+              return args;
+            }
+
+            const [, , , ...args] = extractArgs(message);
+            let formattedMessage = util.format.apply(null, args);
+
+            const messageLines = formattedMessage.split('\\n');
             messageLines.forEach(messageLine => {
               stdout(messageLine);
             });
