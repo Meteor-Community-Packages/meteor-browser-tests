@@ -19,12 +19,6 @@ process.on('exit', () => {
   }
 });
 
-function countPlaceholders(inputString) {
-  const placeholderPattern = /%[sdifjoO]/g; // Regular expression to match %s, %d, and similar placeholders
-  const matches = inputString.match(placeholderPattern);
-  return matches ? matches.length : 0;
-}
-
 export default function startChrome({
   stdout,
   stderr,
