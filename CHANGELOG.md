@@ -1,6 +1,11 @@
 # Changelog
 
+## 1.5.3
+
+Reviewed all drivers and added support for the latest browser versions that are supported for Node 14.
+
 ## 1.5.2
+
 Fix: Support for Selenium 4.x
 
 ## 1.5.1
