@@ -72,17 +72,30 @@ export default function startChrome({
       .then(entries => {
         (entries || []).forEach(entry => {
           let message = entry.message || '';
-          let messageParts = message.split("\"").filter(str => str.trim().length)
-          let [_url, format, ...defaultFormatValues] = messageParts
-          let formatPlaceholdersCount = countPlaceholders(format)
-          let formatLeftoversCount = Math.max(formatPlaceholdersCount - defaultFormatValues.length || 1, 1)
-          let formatValues = [...defaultFormatValues, ...new Array(formatLeftoversCount).fill('')]
-          let formattedMessage = util.format(format, ...formatValues);
-
           if (entry.level.name === 'SEVERE') {
-            stderr(`[ERROR] ${formattedMessage}`);
+            stderr(`[ERROR] ${message}`);
           } else {
-            // Message may have escaped newlines
+            function extractArgs(str) {
+              let rex = /"([^"]*)"|(\b\d+\b)/g;
+              let match;
+              let args = [];
+              while ((match = rex.exec(str)) !== null) {
+                let stringArg = match[1];
+                let numberArg = match[2];
+                if (stringArg !== undefined) {
+                  // string argument found (can be empty)
+                  args.push(stringArg);
+                } else if (numberArg !== undefined) {
+                  // number argument found
+                  args.push(Number(numberArg));
+                }
+              }
+              return args;
+            }
+
+            const [, , , ...args] = extractArgs(message);
+            let formattedMessage = util.format.apply(null, args);
+
             const messageLines = formattedMessage.split('\\n');
             messageLines.forEach(messageLine => {
               stdout(messageLine);
