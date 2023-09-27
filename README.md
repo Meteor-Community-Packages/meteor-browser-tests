@@ -70,13 +70,14 @@ $ TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package <your packag
 
 ### Playwright
 
-
 `playwright@^1.33.0` is the latest version with Node 14 compatibility (Meteor 2.x is set to use Node.js version 14.x by default).
 
 ```bash
 $ npm i --save-dev playwright@^1.33.0
-$ TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package <your package name>
+$ TEST_BROWSER_DRIVER=playwright meteor test --once --driver-package <your package name>
 ```
+
+Use `PLAYWRIGHT_BROWSER` env to select the browser to use for testing. By default, it uses `chromium`.
 
 ### Selenium ChromeDriver
 
