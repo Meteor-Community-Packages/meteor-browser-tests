@@ -61,8 +61,20 @@ When using your test driver package, you will need to install the necessary NPM 
 
 ### Puppeteer
 
+`puppeteer@^19.11.1` is the latest version with Node 14 compatibility (Meteor 2.x is set to use Node.js version 14.x by default).
+
 ```bash
 $ npm i --save-dev puppeteer@^19.11.1
+$ TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package <your package name>
+```
+
+### Playwright
+
+
+`playwright@^1.33.0` is the latest version with Node 14 compatibility (Meteor 2.x is set to use Node.js version 14.x by default).
+
+```bash
+$ npm i --save-dev playwright@^1.33.0
 $ TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package <your package name>
 ```
 
