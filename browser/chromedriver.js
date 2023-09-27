@@ -58,6 +58,8 @@ export default function startChrome({
   // Can't hide the window but can move it off screen
   driver.manage().window().setRect(20000, 20000);
 
+  const LogsArgsRegex = /"([^"]*)"|(\b\d+\b)/g;
+
   // We periodically grab logs from Chrome and pass them back.
   // Every time we call this, we get only the log entries since
   // the previous time we called it.
@@ -70,7 +72,7 @@ export default function startChrome({
             stderr(`[ERROR] ${message}`);
           } else {
             function extractArgs(str) {
-              let rex = /"([^"]*)"|(\b\d+\b)/g;
+              let rex = LogsArgsRegex;
               let match;
               let args = [];
               while ((match = rex.exec(str)) !== null) {
