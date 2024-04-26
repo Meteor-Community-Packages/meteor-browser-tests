@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.0
+
+Add: Playwright driver now accepts any of the available Playwright modules. [PR](https://github.com/Meteor-Community-Packages/meteor-browser-tests/pull/56)
+Add: `ecmascript` package update to v0.16.0
+
 ## 1.5.3
 
 Reviewed all drivers and added support for the latest browser versions that are supported for Node 14.
@@ -9,6 +14,7 @@ Reviewed all drivers and added support for the latest browser versions that are 
 Fix: Support for Selenium 4.x
 
 ## 1.5.1
+
 Fix: Playwright client not terminating after client tests
 
 ## 1.5.0

@@ -11,7 +11,7 @@ NOTE: This package replaces [dispatch:phantomjs-tests](https://github.com/Dispat
 In your test driver package `package.js` file, add
 
 ```js
-api.use('meteortesting:browser-tests@1.5.3', 'server');
+api.use('meteortesting:browser-tests@1.6.0', 'server');
 ```
 
 Then in your server code, do something similar to this:
