@@ -17,13 +17,22 @@ const consoleMap = {
 
 async function startPlaywright(done) {
   // normal import wasn't working for some reason
-  const playwright = await import(
-    `${process.cwd()}/node_modules/playwright/index.mjs`
-  );
+  const playwright_modules = ["playwright", "playwright-chromium", "playwright-firefox", "playwright-webkit"];
+  let playwright = null
+  for (const module of playwright_modules) {
+    try {
+      playwright = await import(
+        `${process.cwd()}/node_modules/${module}/index.mjs`
+      );
+    } catch (e) {
+      // ignore
+    }
+    if (playwright) break;
+  }
   if (!playwright) {
     throw new Error(
       'When running app tests with TEST_BROWSER_DRIVER=playwright, you must first ' +
-        '"meteor npm i --save-dev playwright"'
+      '"meteor npm i --save-dev playwright"'
     );
   }
   const browserName = process.env.PLAYWRIGHT_BROWSER || 'chromium';
