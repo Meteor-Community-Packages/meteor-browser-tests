@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0
+Add: Compatibility with Meteor 3.0
+
 ## 1.6.0
 
 Add: Playwright driver now accepts any of the available Playwright modules. [PR](https://github.com/Meteor-Community-Packages/meteor-browser-tests/pull/56)
