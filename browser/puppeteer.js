@@ -9,6 +9,8 @@
  */
 const util = require('util');
 
+const TWENTY_DAYS = 1000 * 60 * 60 * 24 * 20;
+
 export default function startPuppeteer({
   stdout,
   stderr,
@@ -31,6 +33,7 @@ export default function startPuppeteer({
     const browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       headless: 'new',
+      protocolTimeout: TWENTY_DAYS,
     });
     console.log(await browser.version());
     const page = await browser.newPage();
