@@ -22,7 +22,7 @@ export default function startPuppeteer({
     console.error(error);
     throw new Error(
       'When running app tests with TEST_BROWSER_DRIVER=puppeteer, you must first ' +
-        '"npm i --save-dev puppeteer@^1.5.0"'
+        '"npm i --save-dev puppeteer@^19.11.1"'
     );
   }
 
