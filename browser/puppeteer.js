@@ -9,6 +9,15 @@
  */
 const util = require('util');
 
+// 30 minutes by default
+const WAIT_TIMEOUT = process.env.PUPPETEER_WAIT_TIMEOUT 
+  ? Number.parseInt(process.env.PUPPETEER_WAIT_TIMEOUT, 10)
+  : 30 * 60 * 1000;
+
+if (Number.isNaN(WAIT_TIMEOUT)) {
+  throw new Error(`Invalid PUPPETEER_WAIT_TIMEOUT value: ${process.env.PUPPETEER_WAIT_TIMEOUT}`);
+}
+
 export default function startPuppeteer({
   stdout,
   stderr,
@@ -63,7 +72,7 @@ export default function startPuppeteer({
 
     await page.goto(process.env.ROOT_URL);
 
-    await page.waitForFunction(() => window.testsDone, { timeout: 0 });
+    await page.waitForFunction(() => window.testsDone, { timeout: WAIT_TIMEOUT });
     const testFailures = await page.evaluate('window.testFailures');
 
     await consolePromise;
@@ -73,5 +82,8 @@ export default function startPuppeteer({
     done(testFailures);
   }
 
-  runTests();
+  runTests().catch(err => {
+    stderr(err);
+    done();
+  });
 }
