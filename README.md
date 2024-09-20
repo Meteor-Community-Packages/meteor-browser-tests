@@ -68,6 +68,8 @@ $ npm i --save-dev puppeteer@^19.11.1
 $ TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package <your package name>
 ```
 
+Use `PUPPETEER_WAIT_TIMEOUT` env to set wait timeout in milliseconds after which the driver will forcefully stop running the tests (default is 30 minutes). 
+
 ### Playwright
 
 `playwright@^1.33.0` is the latest version with Node 14 compatibility (Meteor 2.x is set to use Node.js version 14.x by default).
