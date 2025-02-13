@@ -58,14 +58,25 @@ export default function startChrome({
   // Can't hide the window but can move it off screen
   driver.manage().window().setRect(20000, 20000);
 
-  const LogsArgsRegex = /"([^"]*)"|(\b\d+\b)/g;
+  // This regex should properly handle message containing double quotes itself.
+  // The message is contained within the first and the last double quote.
+  const LogsArgsRegex = /"(.*)"$|(\b\d+\b)/g;
+
+  // The message is included in double quotes so double quotes and left angle brackets
+  // in the message are escaped with a backslash.
+  // This function unescapes the message.
+  function unescapeMessage(message) {
+    return message
+    .replace(/\\"/g, '"')
+    .replace(/\\u003C/g, '<');
+  }
 
   // We periodically grab logs from Chrome and pass them back.
   // Every time we call this, we get only the log entries since
   // the previous time we called it.
   function passThroughLogs() {
     return driver.manage().logs().get(logging.Type.BROWSER)
-      .then(entries => {
+    .then(entries => {
         (entries || []).forEach(entry => {
           let message = entry.message || '';
           if (entry.level.name === 'SEVERE') {
@@ -89,10 +100,10 @@ export default function startChrome({
               return args;
             }
 
-            const [, , , ...args] = extractArgs(message);
+            const [, , , ...args] = extractArgs(unescapeMessage(message));
             let formattedMessage = util.format.apply(null, args);
 
-            const messageLines = formattedMessage.split('\\n');
+            const messageLines = formattedMessage.replace(/\\n$/, '').split('\\n');
             messageLines.forEach(messageLine => {
               stdout(messageLine);
             });
