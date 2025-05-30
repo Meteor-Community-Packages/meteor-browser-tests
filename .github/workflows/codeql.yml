@@ -10,6 +10,7 @@ on:
 
 jobs:
   quality:
+    name: Lint / format analyis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,7 +22,7 @@ jobs:
       - name: Run Biome
         run: biome ci .
   analyze:
-    name: Analyze
+    name: Analyze CodeQL
     runs-on: ubuntu-latest
     permissions:
       actions: read
