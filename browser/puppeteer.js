@@ -7,71 +7,73 @@
  * - As a safeguard, exit with code 2 if there hasn't been console output
  *   for 30 seconds.
  */
-const util = require('util');
+const util = require('node:util')
 
-export default function startPuppeteer({
-  stdout,
-  stderr,
-  done,
-}) {
-  let puppeteer;
-  try {
-    // eslint-disable-next-line global-require, import/no-extraneous-dependencies
-    puppeteer = require('puppeteer');
-  } catch (error) {
-    console.error(error);
-    throw new Error(
-      'When running app tests with TEST_BROWSER_DRIVER=puppeteer, you must first ' +
-        '"npm i --save-dev puppeteer@^19.11.1"'
-    );
-  }
+const TWENTY_DAYS = 1000 * 60 * 60 * 24 * 20
 
-  async function runTests() {
-    // --no-sandbox and --disable-setuid-sandbox allow this to easily run in docker
-    const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: 'new',
-    });
-    console.log(await browser.version());
-    const page = await browser.newPage();
+export default function startPuppeteer({ stdout, stderr, done }) {
+	let puppeteer
+	try {
+		// eslint-disable-next-line global-require, import/no-extraneous-dependencies
+		puppeteer = require('puppeteer')
+	} catch (error) {
+		console.error(error)
+		throw new Error(
+			'When running app tests with TEST_BROWSER_DRIVER=puppeteer, you must first ' +
+				'"npm i --save-dev puppeteer@^19.11.1"',
+		)
+	}
 
-    // emitted when the page crashes
-    page.on('error', (err) => {
-      console.warn('The page has crashed.', err);
-    });
+	async function runTests() {
+		// --no-sandbox and --disable-setuid-sandbox allow this to easily run in docker
+		const browser = await puppeteer.launch({
+			args: ['--no-sandbox', '--disable-setuid-sandbox'],
+			headless: 'new',
+			protocolTimeout:
+				process.env.PUPPETEER_PROTOCOL_TIMEOUT === undefined
+					? TWENTY_DAYS
+					: Number.parseInt(process.env.PUPPETEER_PROTOCOL_TIMEOUT, 10),
+		})
+		console.log(await browser.version())
+		const page = await browser.newPage()
 
-    let consolePromise = Promise.resolve();
+		// emitted when the page crashes
+		page.on('error', (err) => {
+			console.warn('The page has crashed.', err)
+		})
 
-    // console message args come in as handles, use this to evaluate them all
-    page.on('console', msg => {
-      let msgType = msg.type();
+		let consolePromise = Promise.resolve()
 
-      consolePromise = consolePromise.then(async () => {
-        // this is racy but how else to do it?
-        const testsAreRunning = await page.evaluate('window.testsAreRunning');
-        const messages = await Promise.all(
-          msg.args().map((arg) => arg.jsonValue()),
-        );
+		// console message args come in as handles, use this to evaluate them all
+		page.on('console', (msg) => {
+			const msgType = msg.type()
 
-        if (msgType === 'error' && !testsAreRunning) {
-          stderr(util.format(...messages));
-        } else {
-          stdout(util.format(...messages));
-        }
-      });
-    });
+			consolePromise = consolePromise.then(async () => {
+				// this is racy but how else to do it?
+				const testsAreRunning = await page.evaluate('window.testsAreRunning')
+				const messages = await Promise.all(
+					msg.args().map((arg) => arg.jsonValue()),
+				)
 
-    await page.goto(process.env.ROOT_URL);
+				if (msgType === 'error' && !testsAreRunning) {
+					stderr(util.format(...messages))
+				} else {
+					stdout(util.format(...messages))
+				}
+			})
+		})
 
-    await page.waitForFunction(() => window.testsDone, { timeout: 0 });
-    const testFailures = await page.evaluate('window.testFailures');
+		await page.goto(process.env.ROOT_URL)
 
-    await consolePromise;
-    await page.close();
-    await browser.close();
+		await page.waitForFunction(() => window.testsDone, { timeout: 0 })
+		const testFailures = await page.evaluate('window.testFailures')
 
-    done(testFailures);
-  }
+		await consolePromise
+		await page.close()
+		await browser.close()
 
-  runTests();
+		done(testFailures)
+	}
+
+	runTests()
 }

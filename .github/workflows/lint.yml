@@ -1,0 +1,23 @@
+name: Code quality
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+
+jobs:
+  quality:
+    name: Biome lint and format check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+      - name: Run Biome
+        run: biome ci .

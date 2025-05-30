@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.0
+- Drop eslint + prettier in favor of biome
+- Fix Chrome stdout, especially when using mocha xunit ouput (see #62)
+- Bump Puppeteer version in the error message
+- Set higher default and allow configuring puppeteer protocol timeout (see #59)
+
 ## 1.7.0
 Add: Compatibility with Meteor 3.0
 
