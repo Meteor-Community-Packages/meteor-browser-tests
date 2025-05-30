@@ -119,7 +119,7 @@ export default function startChrome({ stdout, stderr, done }) {
 
 	// Meteor will call the `runTests` function exported by the driver package
 	// on the client as soon as this page loads.
-	driver.get(process.env.ROOT_URL)
+	driver.get(process.env.ROOT_URL).catch(stdout)
 
 	let testFailures
 	driver
