@@ -1,4 +1,4 @@
-const util = require('util');
+const util = require('node:util')
 
 /**
  * All browser drivers must do the following things:
@@ -10,135 +10,140 @@ const util = require('util');
  *   for 30 seconds.
  */
 
-let driver;
+let driver
 
 // Make sure the chromedriver process does not stick around
 process.on('exit', () => {
-  if (driver) {
-    driver.quit();
-  }
-});
+	if (driver) {
+		driver.quit()
+	}
+})
 
-export default function startChrome({
-  stdout,
-  stderr,
-  done,
-}) {
-  let chromedriver;
-  let webdriver;
-  let logging;
-  let chrome;
-  try {
-    require('chromedriver');
-    webdriver = require('selenium-webdriver');
-    logging = require('selenium-webdriver/lib/logging');
-    chrome = require('selenium-webdriver/chrome');
-  } catch (error) {
-    console.error(error);
-    throw new Error(
-      'When running app tests with TEST_BROWSER_DRIVER=chrome, you must first ' +
-      '"npm i --save-dev selenium-webdriver@3.0.0-beta-2 chromedriver"'
-    );
-  }
+export default function startChrome({ stdout, stderr, done }) {
+	let chromedriver
+	let webdriver
+	let logging
+	let chrome
+	try {
+		require('chromedriver')
+		webdriver = require('selenium-webdriver')
+		logging = require('selenium-webdriver/lib/logging')
+		chrome = require('selenium-webdriver/chrome')
+	} catch (error) {
+		console.error(error)
+		throw new Error(
+			'When running app tests with TEST_BROWSER_DRIVER=chrome, you must first ' +
+				'"npm i --save-dev selenium-webdriver@3.0.0-beta-2 chromedriver"',
+		)
+	}
 
-  // Get the driver instance. By default, chromedriver gives us only errors
-  // so we need to set browser logging level to "ALL".
-  const options = new chrome.Options();
-  if (!process.env.TEST_BROWSER_VISIBLE) options.addArguments('--headless');
-  // Pass additional chrome options as appropriate
-  if (process.env.TEST_CHROME_ARGS) {
-    // Convert any appearances of "%20" to " " so as to support spaces in arguments if necessary
-    let additionalOptions = process.env.TEST_CHROME_ARGS
-        .split(/\s+/)
-        .map((arg) => arg.replace(/%20/g, " "));
-    options.addArguments.apply(options, additionalOptions);
-  }
-  driver = new webdriver.Builder().forBrowser('chrome').withCapabilities(chrome.Options.chrome()).setChromeOptions(options).setLoggingPrefs({ browser: 'ALL' }).build();
+	// Get the driver instance. By default, chromedriver gives us only errors
+	// so we need to set browser logging level to "ALL".
+	const options = new chrome.Options()
+	if (!process.env.TEST_BROWSER_VISIBLE) options.addArguments('--headless')
+	// Pass additional chrome options as appropriate
+	if (process.env.TEST_CHROME_ARGS) {
+		// Convert any appearances of "%20" to " " so as to support spaces in arguments if necessary
+		const additionalOptions = process.env.TEST_CHROME_ARGS.split(/\s+/).map(
+			(arg) => arg.replace(/%20/g, ' '),
+		)
+		options.addArguments.apply(options, additionalOptions)
+	}
+	driver = new webdriver.Builder()
+		.forBrowser('chrome')
+		.withCapabilities(chrome.Options.chrome())
+		.setChromeOptions(options)
+		.setLoggingPrefs({ browser: 'ALL' })
+		.build()
 
-  // Can't hide the window but can move it off screen
-  driver.manage().window().setRect(20000, 20000);
+	// Can't hide the window but can move it off screen
+	driver.manage().window().setRect(20000, 20000)
 
-  // This regex should properly handle message containing double quotes itself.
-  // The message is contained within the first and the last double quote.
-  const LogsArgsRegex = /"(.*)"$|(\b\d+\b)/g;
+	// This regex should properly handle message containing double quotes itself.
+	// The message is contained within the first and the last double quote.
+	const LogsArgsRegex = /"(.*)"$|(\b\d+\b)/g
 
-  // The message is included in double quotes so double quotes and left angle brackets
-  // in the message are escaped with a backslash.
-  // This function unescapes the message.
-  function unescapeMessage(message) {
-    return message
-    .replace(/\\"/g, '"')
-    .replace(/\\u003C/g, '<');
-  }
+	// The message is included in double quotes so double quotes and left angle brackets
+	// in the message are escaped with a backslash.
+	// This function unescapes the message.
+	function unescapeMessage(message) {
+		return message.replace(/\\"/g, '"').replace(/\\u003C/g, '<')
+	}
 
-  // We periodically grab logs from Chrome and pass them back.
-  // Every time we call this, we get only the log entries since
-  // the previous time we called it.
-  function passThroughLogs() {
-    return driver.manage().logs().get(logging.Type.BROWSER)
-    .then(entries => {
-        (entries || []).forEach(entry => {
-          let message = entry.message || '';
-          if (entry.level.name === 'SEVERE') {
-            stderr(`[ERROR] ${message}`);
-          } else {
-            function extractArgs(str) {
-              let rex = LogsArgsRegex;
-              let match;
-              let args = [];
-              while ((match = rex.exec(str)) !== null) {
-                let stringArg = match[1];
-                let numberArg = match[2];
-                if (stringArg !== undefined) {
-                  // string argument found (can be empty)
-                  args.push(stringArg);
-                } else if (numberArg !== undefined) {
-                  // number argument found
-                  args.push(Number(numberArg));
-                }
-              }
-              return args;
-            }
+	// We periodically grab logs from Chrome and pass them back.
+	// Every time we call this, we get only the log entries since
+	// the previous time we called it.
+	function passThroughLogs() {
+		return driver
+			.manage()
+			.logs()
+			.get(logging.Type.BROWSER)
+			.then((entries = []) => {
+				for (const entry of entries) {
+					const message = entry.message || ''
+					if (entry.level.name === 'SEVERE') {
+						stderr(`[ERROR] ${message}`)
+					} else {
+						function extractArgs(str) {
+							const rex = LogsArgsRegex
+							let match = rex.exec(str)
+							const args = []
+							while (match !== null) {
+								const stringArg = match[1]
+								const numberArg = match[2]
+								if (stringArg !== undefined) {
+									// string argument found (can be empty)
+									args.push(stringArg)
+								} else if (numberArg !== undefined) {
+									// number argument found
+									args.push(Number(numberArg))
+								}
+								match = rex.exec(str)
+							}
+							return args
+						}
 
-            const [, , , ...args] = extractArgs(unescapeMessage(message));
-            let formattedMessage = util.format.apply(null, args);
+						const [, , , ...args] = extractArgs(unescapeMessage(message))
+						const formattedMessage = util.format.apply(null, args)
 
-            const messageLines = formattedMessage.replace(/\\n$/, '').split('\\n');
-            messageLines.forEach(messageLine => {
-              stdout(messageLine);
-            });
-          }
-        });
-      });
-  }
+						const messageLines = formattedMessage
+							.replace(/\\n$/, '')
+							.split('\\n')
+						for (const messageLine of messageLines) {
+							stdout(messageLine)
+						}
+					}
+				}
+			})
+	}
 
-  // Meteor will call the `runTests` function exported by the driver package
-  // on the client as soon as this page loads.
-  driver.get(process.env.ROOT_URL);
+	// Meteor will call the `runTests` function exported by the driver package
+	// on the client as soon as this page loads.
+	driver.get(process.env.ROOT_URL)
 
-  let testFailures;
-  driver
-    .wait(function() {
-      // After the page loads, the tests are running. Eventually they
-      // finish and the driver package is supposed to set window.testsDone
-      // and window.testFailures at that time.
-      return passThroughLogs().then(() => {
-        return driver.executeScript('return window.testsDone');
-      });
-    }, 600000)
-    .then(() => {
-      // Empty the logs one last time
-      return passThroughLogs();
-    })
-    .then(() => {
-      return driver.executeScript('return window.testFailures');
-    })
-    .then(failures => {
-      testFailures = failures;
-      return driver.quit();
-    })
-    .then(() => {
-      driver = null;
-      done(testFailures);
-    });
+	let testFailures
+	driver
+		.wait(() => {
+			// After the page loads, the tests are running. Eventually they
+			// finish and the driver package is supposed to set window.testsDone
+			// and window.testFailures at that time.
+			return passThroughLogs().then(() => {
+				return driver.executeScript('return window.testsDone')
+			})
+		}, 600000)
+		.then(() => {
+			// Empty the logs one last time
+			return passThroughLogs()
+		})
+		.then(() => {
+			return driver.executeScript('return window.testFailures')
+		})
+		.then((failures) => {
+			testFailures = failures
+			return driver.quit()
+		})
+		.then(() => {
+			driver = null
+			done(testFailures)
+		})
 }

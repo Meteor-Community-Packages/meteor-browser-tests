@@ -10,86 +10,80 @@
 
 // HINT: If not working, run with `DEBUG=nightmare:*,electron:*` to see nightmare errors
 
-const show = !!process.env.TEST_BROWSER_VISIBLE;
-const TWENTY_DAYS = 1000 * 60 * 60 * 24 * 20;
+const show = !!process.env.TEST_BROWSER_VISIBLE
+const TWENTY_DAYS = 1000 * 60 * 60 * 24 * 20
 
-let nightmare;
+let nightmare
 
-process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
 
 // Make sure the nightmare process does not stick around
 process.on('exit', () => {
-  if (nightmare) {
-    nightmare.end();
-  }
-});
+	if (nightmare) {
+		nightmare.end()
+	}
+})
 
-export default function startNightmare({
-  stdout,
-  stderr,
-  done,
-}) {
-  let Nightmare;
-  try {
-    Nightmare = require('nightmare');
-  } catch (error) {
-    throw new Error('When running tests with TEST_BROWSER_DRIVER=nightmare, you must first "npm i --save-dev nightmare"');
-  }
+export default function startNightmare({ stdout, stderr, done }) {
+	let Nightmare
+	try {
+		Nightmare = require('nightmare')
+	} catch (error) {
+		throw new Error(
+			'When running tests with TEST_BROWSER_DRIVER=nightmare, you must first "npm i --save-dev nightmare"',
+		)
+	}
 
-  nightmare = Nightmare({
-    show,
-    // Controls maximum time client tests can take for Meteor to still
-    // automatically exit after they complete.
-    // Defaults to 20 days
-    waitTimeout: process.env.NIGHTMARE_WAIT_TIMEOUT || TWENTY_DAYS,
-  });
+	nightmare = Nightmare({
+		show,
+		// Controls maximum time client tests can take for Meteor to still
+		// automatically exit after they complete.
+		// Defaults to 20 days
+		waitTimeout: process.env.NIGHTMARE_WAIT_TIMEOUT || TWENTY_DAYS,
+	})
 
-  let testFailures;
-  nightmare
-    .on('page', (type, message, stack) => {
-      if (type === 'error') {
-        stderr(`[ERROR] ${message}\n${stack}`);
-      } else {
-        stdout(`[${type}] ${message}`);
-      }
-    })
-    .on('console', (type, ...args) => {
-      let msgType = type;
+	let testFailures
+	nightmare
+		.on('page', (type, message, stack) => {
+			if (type === 'error') {
+				stderr(`[ERROR] ${message}\n${stack}`)
+			} else {
+				stdout(`[${type}] ${message}`)
+			}
+		})
+		.on('console', (type, ...args) => {
+			let msgType = type
 
-      // unknown console types are mapped or become a warning with addl context
-      if(typeof console[msgType] === "undefined") {
-        msgType = 'warn';
-        console.warn(`UNKNOWN CONSOLE TYPE: ${msgType}`);
-      }
+			// unknown console types are mapped or become a warning with addl context
+			if (typeof console[msgType] === 'undefined') {
+				msgType = 'warn'
+				console.warn(`UNKNOWN CONSOLE TYPE: ${msgType}`)
+			}
 
-      console[msgType](...args);
-    })
+			console[msgType](...args)
+		})
 
-    // Meteor will call the `runTests` function exported by the driver package
-    // on the client as soon as this page loads.
-    .goto(process.env.ROOT_URL, {
-      'http-equiv': 'Content-Security-Policy',
-      content: 'script-src \'unsafe-eval\'',
-    })
+		// Meteor will call the `runTests` function exported by the driver package
+		// on the client as soon as this page loads.
+		.goto(process.env.ROOT_URL, {
+			'http-equiv': 'Content-Security-Policy',
+			content: "script-src 'unsafe-eval'",
+		})
 
-    // After the page loads, the tests are running. Eventually they
-    // finish and the driver package is supposed to set window.testsDone
-    // and window.testFailures at that time.
-    .wait(function () {
-      return window.testsDone;
-    })
-    .evaluate(function () {
-      return window.testFailures;
-    })
-    .then(failures => {
-      testFailures = failures;
-      return nightmare.end();
-    })
-    .then(() => {
-      nightmare = null;
-      done(testFailures);
-    })
-    .catch(error => {
-      stderr(error && error.message);
-    });
+		// After the page loads, the tests are running. Eventually they
+		// finish and the driver package is supposed to set window.testsDone
+		// and window.testFailures at that time.
+		.wait(() => window.testsDone)
+		.evaluate(() => window.testFailures)
+		.then((failures) => {
+			testFailures = failures
+			return nightmare.end()
+		})
+		.then(() => {
+			nightmare = null
+			done(testFailures)
+		})
+		.catch((error) => {
+			stderr(error?.message)
+		})
 }
