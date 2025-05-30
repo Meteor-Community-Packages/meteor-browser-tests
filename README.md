@@ -1,5 +1,11 @@
 # meteortesting:browser-tests
 
+![GitHub License](https://img.shields.io/github/license/Meteor-Community-Packages/meteor-browser-tests)
+[![Code quality](https://github.com/Meteor-Community-Packages/meteor-browser-tests/actions/workflows/lint.yml/badge.svg)](https://github.com/Meteor-Community-Packages/meteor-browser-tests/actions/workflows/lint.yml)
+[![CodeQL](https://github.com/Meteor-Community-Packages/meteor-browser-tests/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Meteor-Community-Packages/meteor-browser-tests/actions/workflows/github-code-scanning/codeql)
+[![Formatted with Biome](https://img.shields.io/badge/Formatted_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev/)
+![GitHub License](https://img.shields.io/github/license/Meteor-Community-Packages/meteor-browser-tests)
+
 _Formerly published as aldeed:browser-tests_
 
 This package exports a `startBrowser` function for server code, which runs your client tests within a headless browser page. Meteor test driver packages can depend on this package. See the example implementation here: https://github.com/DispatchMe/meteor-mocha
@@ -70,6 +76,7 @@ $ TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package <your packag
 
 ### Playwright
 
+#### Meteor 2.x:
 `playwright@^1.33.0` is the latest version with Node 14 compatibility (Meteor 2.x is set to use Node.js version 14.x by default).
 
 ```bash
@@ -77,11 +84,26 @@ $ npm i --save-dev playwright@^1.33.0
 $ TEST_BROWSER_DRIVER=playwright meteor test --once --driver-package <your package name>
 ```
 
-Use `PLAYWRIGHT_BROWSER` env to select the browser to use for testing. By default, it uses `chromium`.
+#### Meteor 3.x:
+```bash
+$ npm i --save-dev playwright
+$ npx playwright install
+# additionally it might ask you to install dependencies for the browsers:
+$ sudo meteor npx playwright install-deps 
+$ TEST_BROWSER_DRIVER=playwright meteor test --once --driver-package <your package name>
+```
+
+Playwright supports multiple browsers, including Chromium, Firefox, and WebKit.
+You can specify which browser to use by setting the `PLAYWRIGHT_BROWSER` environment variable.
+The available options are `chromium`, `firefox`, and `webkit`.
+By default, it uses `chromium`.
 
 ### Selenium ChromeDriver
 
-Meteor 1.6+:
+General note: make sure your chrome driver version matches your installed Chrome version.
+You can check the version of Chrome you have installed by going to `chrome://version/` in your browser.
+
+#### Meteor 1.6+:
 
 ```bash
 $ meteor npm i --save-dev selenium-webdriver chromedriver
@@ -90,9 +112,10 @@ $ TEST_BROWSER_DRIVER=chrome meteor test --once --driver-package <your package n
 
 Chrome will run headless unless you export `TEST_BROWSER_VISIBLE=1`.
 
-Additional command-line arguments for Chrome can be specified using the `TEST_CHROME_ARGS` environment variable. Multiple arguments are supported, separated by spaces. If you need to include a space inside an individual argument, use `%20` instead of the space.
+Additional command-line arguments for Chrome can be specified using the `TEST_CHROME_ARGS` environment variable. Multiple arguments are supported, separated by spaces. 
+If you need to include a space inside an individual argument, use `%20` instead of the space.
 
-Meteor < 1.6:
+#### Meteor < 1.6:
 
 **NOTE: Currently you must pin to exactly version 3.0.0-beta-2 of selenium-webdriver for earlier versions of Meteor because the latest webdriver package only works on Node 6.x+. The `-E` in the command below is important!**
 
@@ -113,7 +136,8 @@ You can export `TEST_BROWSER_VISIBLE=1` to show the Electron window while tests 
 
 ### PhantomJS
 
-Support for PhantomJS has been deprecated because it's development is suspended. For more information on why it got suspended, please take a look at [the repository](https://github.com/ariya/phantomjs)
+> Please note: Support for PhantomJS has been deprecated because it's development is suspended. 
+> For more information on why it got suspended, please take a look at [the repository](https://github.com/ariya/phantomjs)
 
 ```bash
 $ npm i --save-dev phantomjs-prebuilt
