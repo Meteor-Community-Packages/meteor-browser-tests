@@ -9,6 +9,17 @@ on:
     - cron: "54 23 * * 5"
 
 jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+      - name: Run Biome
+        run: biome ci .
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
